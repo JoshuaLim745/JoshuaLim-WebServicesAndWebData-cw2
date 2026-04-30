@@ -13,3 +13,60 @@ Basic functionality
 Edge cases
 1.
 """
+
+import unittest 
+from unittest.mock import patch, MagicMock
+from crawler import Crawler
+from indexer import Indexer
+
+class testCrawler(unittest.TestCase):
+    def setUp(self):
+        self.indexer = Indexer()
+        self.crawler = Crawler("http://test.com", self.indexer)
+
+    # We patch requests.get to fake the HTML response, and time.sleep to skip the 6-second wait
+    @patch('crawler.requests.get')
+    @patch('crawler.time.sleep')
+    def testCrawlExtractsWords(self, mock_sleep, mock_get):
+        # Creating a fake response object
+        mock_response = MagicMock()
+        mock_response.text = "<html><body><p>Hello world! Hello test.</p></body></html>"
+        mock_get.return_value = mock_response
+
+        # Run the crawl (it should only crawl the start URL since there are no links)
+        self.crawler.crawl()
+
+        # Check if words were extracted and passed to the indexer correctly
+        # Ignoring punctuation and converting to lowercase
+        expected_index = {
+            "hello": {"http://test.com": [0, 2]},
+            "world": {"http://test.com": [1]},
+            "test": {"http://test.com": [3]}
+        }
+        self.assertEqual(self.indexer.index, expected_index)
+
+        # Assert that the politeness window was triggered
+        mock_sleep.assert_called_with(6)
+
+    @patch('crawler.requests.get')
+    @patch('crawler.time.sleep')
+    def test_crawl_finds_links(self, mock_sleep, mock_get):
+        # First page has a link to page2, page2 has no links
+        responses = [
+            MagicMock(text="<html><a href='/page2'>Link</a></html>"),
+            MagicMock(text="<html>End here</html>")
+        ]
+        mock_get.side_effect = responses
+
+        self.crawler.crawl()
+
+        # It should have called requests.get twice
+        self.assertEqual(mock_get.call_count, 2)
+        # Check that it actually tried to visit the constructed URL
+        mock_get.assert_any_call("http://test.com/page2", timeout=10)
+        
+        
+        mock_sleep.assert_called_with(6)
+
+if __name__ == '__main__':
+    unittest.main()
