@@ -15,9 +15,14 @@ Edge cases
 """
 
 import unittest 
+import sys
+import os
 from unittest.mock import patch, MagicMock
-from crawler import Crawler
-from indexer import Indexer
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from src.crawler import Crawler
+from src.indexer import Indexer
+
 
 class testCrawler(unittest.TestCase):
     def setUp(self):
@@ -25,8 +30,8 @@ class testCrawler(unittest.TestCase):
         self.crawler = Crawler("http://test.com", self.indexer)
 
     # We patch requests.get to fake the HTML response, and time.sleep to skip the 6-second wait
-    @patch('crawler.requests.get')
-    @patch('crawler.time.sleep')
+    @patch('src.crawler.requests.get')
+    @patch('src.crawler.time.sleep')
     def testCrawlExtractsWords(self, mock_sleep, mock_get):
         # Creating a fake response object
         mock_response = MagicMock()
@@ -45,11 +50,8 @@ class testCrawler(unittest.TestCase):
         }
         self.assertEqual(self.indexer.index, expected_index)
 
-        # Assert that the politeness window was triggered
-        mock_sleep.assert_called_with(6)
-
-    @patch('crawler.requests.get')
-    @patch('crawler.time.sleep')
+    @patch('src.crawler.requests.get')
+    @patch('src.crawler.time.sleep')
     def test_crawl_finds_links(self, mock_sleep, mock_get):
         # First page has a link to page2, page2 has no links
         responses = [
@@ -65,7 +67,7 @@ class testCrawler(unittest.TestCase):
         # Check that it actually tried to visit the constructed URL
         mock_get.assert_any_call("http://test.com/page2", timeout=10)
         
-        
+        # Checks if the time.sleep(6) was called. If so then it marks the assert as a success and ignores the 6 second wait time
         mock_sleep.assert_called_with(6)
 
 if __name__ == '__main__':
