@@ -22,13 +22,18 @@ Requirements
 """
 
 import json
+from pathlib import Path
 
 class Indexer:
-    def __init__(self, index_file='index.json'):
-        self.index_file = index_file
+    def __init__(self, indexFile='index.json'):
+        self.indexFile = indexFile
         self.index = {}
+        self.targetDir = Path("..") / "data"
+        self.targetDir.mkdir(parents=True, exist_ok=True)
+        self.filePath = self.targetDir / "inverseIndex.json"
+        
 
-    def add_words(self, url, words):
+    def addWords(self, url, words):
         """Adds a list of words and their positions to the index for a specific URL."""
         for position, word in enumerate(words):
             if word not in self.index:
@@ -39,13 +44,13 @@ class Indexer:
 
     def save(self):
         """Serializes the index dictionary to a JSON file."""
-        with open(self.index_file, 'w', encoding='utf-8') as f:
+        with open(self.filePath, 'w', encoding='utf-8') as f:
             json.dump(self.index, f)
 
     def load(self):
         """Loads the index dictionary from a JSON file."""
         try:
-            with open(self.index_file, 'r', encoding='utf-8') as f:
+            with open(self.filePath, 'r', encoding='utf-8') as f:
                 self.index = json.load(f)
             return True
         except FileNotFoundError:

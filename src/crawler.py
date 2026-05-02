@@ -27,6 +27,8 @@ class Crawler:
     def crawl(self):
         """Crawls the domain, extracts text, and builds the index."""
         visited = set()
+        # Not needed as the main domain page that we visit is the same as page 1
+        visited.add("https://quotes.toscrape.com/page/1/")
         queue = [self.startUrl]
         self.indexer.index = {}  # Reset index before a fresh build
 
@@ -58,7 +60,7 @@ class Crawler:
             words = re.findall(r'\b\w+\b', text.lower())
             
             # Pass the extracted data to the indexer
-            self.indexer.add_words(url, words)
+            self.indexer.addWords(url, words)
 
             # Find all links on the page to continue crawling
             for link in soup.find_all('a', href=True):
@@ -66,8 +68,9 @@ class Crawler:
                 nextUrl = nextUrl.split('#')[0]  # Remove anchor fragments
 
                 # Restrict crawling to the same domain
-                if urlparse(nextUrl).netloc == self.baseDomain and nextUrl not in visited and nextUrl not in queue:
-                    queue.append(nextUrl)
+                if nextUrl.startswith(f"{self.startUrl}page/"):
+                    if nextUrl not in visited and nextUrl not in queue:
+                        queue.append(nextUrl)
 
             # Observe the 6-second politeness window
             if queue: 
@@ -76,4 +79,4 @@ class Crawler:
 
         # Save the populated index to the file system
         self.indexer.save()
-        print(f"\nBuild complete. Index saved to {self.indexer.index_file}.")
+        print(f"\nBuild complete. Index saved to {self.indexer.indexFile}.")
