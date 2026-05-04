@@ -24,18 +24,18 @@ from src.indexer import Indexer
 class TestIndexer(unittest.TestCase):
     def setUp(self):
         # Use a temporary test file so we don't overwrite the real index
-        self.test_file = 'test_index.json'
-        self.indexer = Indexer(index_file=self.test_file)
+        self.testFile = 'testIndex.json'
+        self.indexer = Indexer(indexFile=self.testFile, testCase=True)
 
     def tearDown(self):
         # Clean up the test file after tests run
-        if os.path.exists(self.test_file):
-            os.remove(self.test_file)
+        if os.path.exists(self.testFile):
+            os.remove(self.testFile)
 
-    def test_add_words(self):
+    def testAddWords(self):
         url = "http://test.com"
         words = ["hello", "world", "hello"]
-        self.indexer.add_words(url, words)
+        self.indexer.addWords(url, words)
 
         # 'hello' should be at positions 0 and 2
         self.assertIn("hello", self.indexer.index)
@@ -45,22 +45,22 @@ class TestIndexer(unittest.TestCase):
         self.assertIn("world", self.indexer.index)
         self.assertEqual(self.indexer.index["world"][url], [1])
 
-    def test_save_and_load(self):
+    def testSaveAndLoad(self):
         # Populate dummy data
         self.indexer.index = {"test": {"http://test.com": [0]}}
         
         # Save it
         self.indexer.save()
-        self.assertTrue(os.path.exists(self.test_file))
+        self.assertTrue(os.path.exists(self.testFile))
 
         # Create a new indexer to test loading
-        new_indexer = Indexer(index_file=self.test_file)
+        new_indexer = Indexer(indexFile=self.testFile, testCase=True)
         success = new_indexer.load()
 
         self.assertTrue(success)
         self.assertEqual(new_indexer.index, {"test": {"http://test.com": [0]}})
 
-    def test_load_file_not_found(self):
+    def testLoadFileNotFound(self):
         # Ensure it handles a missing file gracefully
         success = self.indexer.load()
         self.assertFalse(success)

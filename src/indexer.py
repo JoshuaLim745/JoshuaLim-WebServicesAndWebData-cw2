@@ -25,13 +25,20 @@ import json
 from pathlib import Path
 
 class Indexer:
-    def __init__(self, indexFile='index.json'):
+    def __init__(self, indexFile='inverseIndex.json', testCase=False):
         self.indexFile = indexFile
         self.index = {}
-        self.targetDir = Path("..") / "data"
-        self.targetDir.mkdir(parents=True, exist_ok=True)
-        self.filePath = self.targetDir / "inverseIndex.json"
-        
+
+        if testCase:
+            # To create a json just for test cases
+            self.targetDir = Path("..") / "tests"
+            self.targetDir.mkdir(parents=True, exist_ok=True)
+            self.filePath = self.targetDir / indexFile
+        else:
+            # Main index for this cw
+            self.targetDir = Path("..") / "data"
+            self.targetDir.mkdir(parents=True, exist_ok=True)
+            self.filePath = self.targetDir / indexFile
 
     def addWords(self, url, words):
         """Adds a list of words and their positions to the index for a specific URL."""

@@ -21,16 +21,16 @@ Requirements
 import sys
 from indexer import Indexer
 from crawler import Crawler
-# from search import Searcher
+from search import Searcher
 
 def run_cli():
     # IMPORTANT: Replace this URL with the specific target site for your assignment
     TARGET_WEBSITE = "https://quotes.toscrape.com/" 
     
     # Initialize the components
-    indexer = Indexer(indexFile='index.json')
+    indexer = Indexer()
     crawler = Crawler(TARGET_WEBSITE, indexer)
-    # searcher = Searcher(indexer)
+    searcher = Searcher(indexer)
 
     print("--- Modular Search Tool Shell ---")
     print(f"Targeting: {TARGET_WEBSITE}")
@@ -38,12 +38,12 @@ def run_cli():
     
     while True:
         try:
-            user_input = input("> ").strip().split(maxsplit=1)
-            if not user_input:
+            userInput = input("> ").strip().split(maxsplit=1)
+            if not userInput:
                 continue
 
-            command = user_input[0].lower()
-            args = user_input[1] if len(user_input) > 1 else ""
+            command = userInput[0].lower()
+            args = userInput[1] if len(userInput) > 1 else ""
 
             # Route commands to the appropriate module
             if command == 'build':
@@ -58,15 +58,13 @@ def run_cli():
                     
             elif command == 'print':
                 if args:
-                    # searcher.print_word(args)
-                    print("print")
+                    searcher.printWord(args)
                 else:
                     print("Usage error. Try: print <word>")
                     
             elif command == 'find':
                 if args:
-                    # searcher.find(args)
-                    print("find")
+                    searcher.find(args)
                 else:
                     print("Usage error. Try: find <query>")
                     

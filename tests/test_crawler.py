@@ -26,7 +26,7 @@ from src.indexer import Indexer
 
 class testCrawler(unittest.TestCase):
     def setUp(self):
-        self.indexer = Indexer()
+        self.indexer = Indexer(testCase=True)
         self.crawler = Crawler("http://test.com", self.indexer)
 
     # We patch requests.get to fake the HTML response, and time.sleep to skip the 6-second wait

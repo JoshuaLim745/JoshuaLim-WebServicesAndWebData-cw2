@@ -25,3 +25,46 @@ Requirements
     e. Return all the URL of pages where all the words appear on - If there is no pages then just return with an appropraite message stating as such. 
 
 """
+
+class Searcher:
+    def __init__(self, indexer):
+        self.indexer = indexer
+
+    def printWord(self, word):
+        """Prints the index entries (URLs, frequencies, and positions) for a single word."""
+        word = word.lower()
+        if word in self.indexer.index:
+            print(f"\nInverted index for '{word}':")
+            for url, positions in self.indexer.index[word].items():
+                frequency = len(positions)
+                print(f"  -> {url} (Frequency: {frequency}, Positions: {positions})")
+        else:
+            print(f"The word '{word}' was not found in the index.")
+
+    def find(self, query):
+        """Finds URLs that contain all words in the provided query phrase (AND logic)."""
+        words = query.lower().split()
+        if not words:
+            return
+
+        # Start with the URLs containing the first word
+        if words[0] not in self.indexer.index:
+            print("No pages found.")
+            return
+
+        # Keep a mathematical set of matching URLs to filter down
+        matchingUrl = set(self.indexer.index[words[0]].keys())
+
+        # Intersect with URLs containing subsequent words
+        for word in words[1:]:
+            if word not in self.indexer.index:
+                print("No pages found.")
+                return
+            matchingUrl.intersection_update(set(self.indexer.index[word].keys()))
+
+        if matchingUrl:
+            print(f"\nPages containing '{query}':")
+            for url in matchingUrl:
+                print(f"  -> {url}")
+        else:
+            print("No pages found.")
