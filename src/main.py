@@ -32,9 +32,12 @@ def run_cli():
     crawler = Crawler(TARGET_WEBSITE, indexer)
     searcher = Searcher(indexer)
 
+    # Boolean values
+    loaded = False
+
     print("--- Modular Search Tool Shell ---")
     print(f"Targeting: {TARGET_WEBSITE}")
-    print("Available commands: build, load, print <word>, find <query>, exit")
+    print("Available commands: build, load, print <word>, find <word(s)>, exit")
     
     while True:
         try:
@@ -53,18 +56,25 @@ def run_cli():
                 success = indexer.load()
                 if success:
                     print("Index loaded successfully.")
+                    loaded = True
                 else:
                     print(f"Error: '{indexer.indexFile}' not found. Please run 'build' first.")
                     
             elif command == 'print':
                 if args:
-                    searcher.printWord(args)
+                    if loaded:
+                        searcher.printWord(args)
+                    else: 
+                        print("Usage error. Please run load command before running print command")
                 else:
                     print("Usage error. Try: print <word>")
                     
             elif command == 'find':
                 if args:
-                    searcher.find(args)
+                    if loaded:
+                        searcher.find(args)
+                    else: 
+                        print("Usage error. Please run load command before running find command")
                 else:
                     print("Usage error. Try: find <query>")
                     
