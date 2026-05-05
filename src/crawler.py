@@ -68,9 +68,8 @@ class Crawler:
                 nextUrl = nextUrl.split('#')[0]  # Remove anchor fragments
 
                 # Restrict crawling to the same domain
-                if nextUrl.startswith(f"{self.startUrl}page/"):
-                    if nextUrl not in visited and nextUrl not in queue:
-                        queue.append(nextUrl)
+                if urlparse(nextUrl).netloc == self.baseDomain and nextUrl not in visited and nextUrl not in queue:
+                    queue.append(nextUrl)
 
             # Observe the 6-second politeness window
             if queue: 
