@@ -33,6 +33,10 @@ class Searcher:
     def printWord(self, word):
         """Prints the index entries (URLs, frequencies, and positions) for a single word."""
 
+        if len(word.lower().split()) > 1:
+            print("Usage error. Please enter a single word alongside the print command")
+            return
+
         word = word.lower()
         if word in self.indexer.index:
             print(f"\nInverted index for '{word}':")
