@@ -33,10 +33,6 @@ class Searcher:
     def printWord(self, word):
         """Prints the index entries (URLs, frequencies, and positions) for a single word."""
 
-        if len(word.lower().split()) > 1:
-            print("Usage error. Please enter a single word alongside the print command")
-            return 
-
         word = word.lower()
         if word in self.indexer.index:
             print(f"\nInverted index for '{word}':")
@@ -51,8 +47,6 @@ class Searcher:
     def find(self, query):
         """Finds URLs that contain all words in the provided query phrase (AND logic)."""
         words = query.lower().split()
-        if not words:
-            return "Usage error. Please enter word(s) alongside the find command"
 
         # Start with the URLs containing the first word
         if words[0] not in self.indexer.index:
@@ -70,7 +64,7 @@ class Searcher:
             matchingUrl.intersection_update(set(self.indexer.index[word].keys()))
 
         if matchingUrl:
-            print(f"\nPages containing '{query}':")
+            print(f"\nPages containing '{query.lower()}':")
             for url in matchingUrl:
                 print(f"  -> {url}")
         else:

@@ -4,6 +4,8 @@ Requirements
 2. Using a for loop we go through this list of words. To obtain the positon of a word we can use the enumerate(Words) - to get position of word.
 3. Return back to Crawler.py and prepare to go through another list of words when called again.
 4. After all the pages have been scraped and the save function is called, it is then written to a .json file.
+    
+    
     Example of json file <-- AI suggestion to improve my storing of data. 
     {
         "apple": {
